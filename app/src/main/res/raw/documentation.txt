@@ -1,0 +1,22 @@
+1. Mongo DB = MongoDB é um banco de dados NoSQL baseado em documento usado para armazenamento de dados de alto volume. Portanto, com bancos de dados SQL relacionais, precisamos definir um
+esquema de banco de dados antes de podermos trabalhar com o dados em si. Porém, por outro lado, não temos bancos de dados SQL ou não estruturados. Portanto, no SQL não é a abreviação de no SQL,
+mas não apenas SQL. Portanto, nenhum sistema SQL permite que você trabalhe com estruturas de dados diferentes dentro de um banco de dados, e eles fazem isso também não requer um esquema de banco de
+dados predefinido. Agora, existem quatro tipos principais diferentes de bancos de dados NoSQL.
+Portanto, temos um banco de dados de documentos que basicamente armazena os dados dos documentos, que são semelhantes para um JSON, e cada documento contém pares de campos e valores. E esses valores
+normalmente podem ser de vários tipos, incluindo coisas como strings e números, booleanos,matrizes ou mesmo objetos.
+
+2.Realm é um primeiro banco de dados móvel projetado para aplicativos modernos baseados em dados. Você pode usar o domínio para construir a web móvel, desktop e aplicativos IoT também.
+ Um domínio é um banco de dados integrado orientado a objetos que permite construir aplicativos em tempo real. Seu SDK também fornece acesso aos serviços do Atlas App, que é um back-end seguro que pode sincronizar
+os dados entre dispositivos que podem autenticar, gerenciar usuários e muito mais.  Por outro lado, Realm Sync é um serviço que lhe permitirá sincronizar facilmente os dados entre
+um banco de dados do lado do cliente e um backend MongoDB, que chamamos de Atlas. Basicamente, em relação à sincronização, faremos todo o trabalho pesado para você.
+Você não precisa se preocupar com a conexão à internet e a sincronização entre o local e o banco de dados remoto. Você não precisa nem se preocupar com o tratamento das exceções, com a serialização adequada dos dados
+ do cliente para o servidor e vice-versa. A sincronização do Realm preenche automaticamente a lacuna entre o armazenamento local e o atlas do MongoDB para manter o
+dados atuais e precisos. Por exemplo, digamos que você queira salvar os dados em um banco de dados de domínio no seu dispositivo móvel enquanto não tiver uma conexão com a internet.
+Nesse caso, quando você realmente salvar os dados, eles serão salvos e disponibilizados localmente no seu banco de dados de domínio, mas não em seu back-end.
+No entanto, assim que você recuperar a conexão com a Internet, o Realm Sync fará automaticamente o trabalhar nos bastidores e tentará sincronizar os dados, enviando todas as alterações locais do
+ banco de dados de domínio local para o back-end sem qualquer ação de sua parte. E tudo isso é feito automaticamente.
+
+3.Criando seu banco Mongo DB
+
+ Acessar o site
+https://account.mongodb.com/account/login?n=https%3A%2F%2Fcloud.mongodb.com%2Fv2%2F65f7040b0c981214d0b28a92&nextHash=%23clusters&signedOut=true
