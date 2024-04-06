@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import br.thiago.diaryapp.navigation.Screen
 import br.thiago.diaryapp.navigation.SetupNavGraph
@@ -21,16 +22,19 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
-//            .setKeepOnScreenCondition {
-//            keepSplashOpened
-//        }
+            .setKeepOnScreenCondition {
+            keepSplashOpened
+        }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             DiaryAppTheme(dynamicColor = false) {
                 val navController = rememberNavController()
                 SetupNavGraph(
-                    startDestination = Screen.Authentication.route,
+                    startDestination = getStartDestination(),
                     navController = navController,
-
+                    onDataLoaded = {
+                        keepSplashOpened = false
+                    }
                 )
 
             }
@@ -38,3 +42,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+private fun getStartDestination(): String {
+    val user = App.create(APP_ID).currentUser
+    return if (user != null && user.loggedIn) Screen.Home.route
+    else Screen.Authentication.route
+}
