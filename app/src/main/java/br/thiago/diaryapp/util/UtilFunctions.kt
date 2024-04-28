@@ -1,5 +1,10 @@
 package br.thiago.diaryapp.util
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import io.realm.kotlin.types.RealmInstant
+import java.time.Instant
+
 //import android.net.Uri
 //import android.util.Log
 //import androidx.core.net.toUri
@@ -68,12 +73,13 @@ package br.thiago.diaryapp.util
 //    }
 //}
 //
-//fun Instant.toRealmInstant(): RealmInstant {
-//    val sec: Long = this.epochSecond
-//    val nano: Int = this.nano
-//    return if (sec >= 0) {
-//        RealmInstant.from(sec, nano)
-//    } else {
-//        RealmInstant.from(sec + 1, -1_000_000 + nano)
-//    }
-//}
+@RequiresApi(Build.VERSION_CODES.O)
+fun Instant.toRealmInstant(): RealmInstant {
+    val sec: Long = this.epochSecond
+    val nano: Int = this.nano
+    return if (sec >= 0) {
+        RealmInstant.from(sec, nano)
+    } else {
+        RealmInstant.from(sec + 1, -1_000_000 + nano)
+    }
+}
