@@ -78,14 +78,12 @@ fun HomeScreen(
                             onClick = navigateToWriteWithArgs
                         )
                     }
-
                     is RequestState.Error -> {
                         EmptyPage(
                             title = "Error",
                             subtitle = "${diaries.error.message}"
                         )
                     }
-
                     is RequestState.Loading -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
@@ -94,7 +92,6 @@ fun HomeScreen(
                             CircularProgressIndicator()
                         }
                     }
-
                     else -> {}
                 }
             }

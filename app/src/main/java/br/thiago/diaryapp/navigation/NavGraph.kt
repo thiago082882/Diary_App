@@ -17,11 +17,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import br.thiago.diaryapp.data.repository.MongoDB
 import br.thiago.diaryapp.model.RequestState
+import br.thiago.diaryapp.presentation.components.DisplayAlertDialog
 import br.thiago.diaryapp.presentation.screens.auth.AuthenticationScreen
 import br.thiago.diaryapp.presentation.screens.auth.AuthenticationViewModel
 import br.thiago.diaryapp.presentation.screens.home.HomeScreen
 import br.thiago.diaryapp.presentation.screens.home.HomeViewModel
+import br.thiago.diaryapp.util.Constants.APP_ID
 import br.thiago.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
@@ -29,6 +32,7 @@ import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+@RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun SetupNavGraph(
     startDestination: String,
@@ -158,6 +162,28 @@ fun NavGraphBuilder.homeRoute(
                 navigateToWrite = navigateToWrite,
                 navigateToWriteWithArgs = navigateToWriteWithArgs
             )
+            
+            LaunchedEffect(key1 = Unit){
+                MongoDB.configureTheRealm()
+            }
+            DisplayAlertDialog(
+                title = "Sign Out",
+                message = "Are you sure you want to Sign Out from your Google Account?",
+                dialogOpened = signOutDialogOpened,
+                onDialogClosed = { signOutDialogOpened = false },
+                onYesClicked = {
+                    scope.launch(Dispatchers.IO) {
+                        val user = App.create(APP_ID).currentUser
+                        if(user != null){
+                            user.logOut()
+                         withContext(Dispatchers.Main){
+                             navigateToAuth()
+                         }
+
+                        }
+                    }
+                })
+
         }
 
         fun NavGraphBuilder.writeRoute() {

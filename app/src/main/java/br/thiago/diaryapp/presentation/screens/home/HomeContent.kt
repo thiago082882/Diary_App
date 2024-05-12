@@ -44,7 +44,7 @@ fun HomeContent(
                     items = diaries,
                     key = { it._id.toString() }
                 ) {
-                    DiaryHolder()
+                    DiaryHolder(diary = it, onClick = onClick)
                 }
             }
         }
@@ -53,7 +53,6 @@ fun HomeContent(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DateHeader(localDate: LocalDate) {
     Row(
@@ -130,7 +129,6 @@ fun EmptyPage(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 @Preview(showBackground = true)
 fun DateHeaderPreview() {
