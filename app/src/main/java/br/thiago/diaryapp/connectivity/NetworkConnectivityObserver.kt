@@ -14,7 +14,8 @@ class NetworkConnectivityObserver(context: Context): ConnectivityObserver {
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-    @RequiresApi(Build.VERSION_CODES.N)
+
+
     override fun observe(): Flow<ConnectivityObserver.Status> {
         return callbackFlow {
             val callback = object : ConnectivityManager.NetworkCallback() {
@@ -39,7 +40,9 @@ class NetworkConnectivityObserver(context: Context): ConnectivityObserver {
                 }
             }
 
-            connectivityManager.registerDefaultNetworkCallback(callback)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                connectivityManager.registerDefaultNetworkCallback(callback)
+            }
             awaitClose {
                 connectivityManager.unregisterNetworkCallback(callback)
             }

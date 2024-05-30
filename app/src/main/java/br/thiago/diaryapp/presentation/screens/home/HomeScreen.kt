@@ -21,7 +21,7 @@ import br.thiago.diaryapp.data.repository.Diaries
 import br.thiago.diaryapp.model.RequestState
 import java.time.ZonedDateTime
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

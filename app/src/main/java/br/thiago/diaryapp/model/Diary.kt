@@ -20,6 +20,5 @@ open class Diary : RealmObject {
     var title: String = ""
     var description: String = ""
     var images: RealmList<String> = realmListOf()
-    @RequiresApi(Build.VERSION_CODES.O)
     var date: RealmInstant = Instant.now().toRealmInstant()
 }

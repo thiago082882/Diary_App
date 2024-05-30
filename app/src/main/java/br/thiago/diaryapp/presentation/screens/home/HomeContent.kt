@@ -20,7 +20,7 @@ import br.thiago.diaryapp.model.Diary
 import br.thiago.diaryapp.presentation.components.DiaryHolder
 import java.time.LocalDate
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeContent(

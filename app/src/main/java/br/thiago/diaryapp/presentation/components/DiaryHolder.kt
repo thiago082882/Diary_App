@@ -49,7 +49,7 @@ import java.util.Date
 import java.util.Locale
 
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Composable
 fun DiaryHolder(diary: Diary, onClick: (String) -> Unit) {
     val localDensity = LocalDensity.current
