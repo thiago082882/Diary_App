@@ -1,6 +1,7 @@
 package br.thiago.diaryapp.presentation.screens.write
 
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
@@ -161,8 +162,8 @@ fun WriteContent(
                             Diary().apply {
                                 this.title = uiState.title
                                 this.description = uiState.description
-                                this.images =
-                                    galleryState.images.map { it.remoteImagePath }.toRealmList()
+                                this.images = galleryState.images.map { it.remoteImagePath }.toRealmList()
+                                Log.d("thiago", "Saving Diary: $this")
                             }
                         )
                     } else {

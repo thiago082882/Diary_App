@@ -1,7 +1,6 @@
 package br.thiago.diaryapp.presentation.screens.home
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -133,4 +132,5 @@ fun EmptyPage(
 @Preview(showBackground = true)
 fun DateHeaderPreview() {
     DateHeader(localDate = LocalDate.now())
+
 }

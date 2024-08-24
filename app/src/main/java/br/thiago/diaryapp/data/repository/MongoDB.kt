@@ -1,5 +1,6 @@
 package br.thiago.diaryapp.data.repository
 
+
 import br.thiago.diaryapp.model.Diary
 import br.thiago.diaryapp.model.RequestState
 import br.thiago.diaryapp.util.Constants.APP_ID
@@ -19,12 +20,10 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-
 object MongoDB : MongoRepository {
-
-    private lateinit var realm: Realm
-    private val app = App.Companion.create(APP_ID)
+    private val app = App.create(APP_ID)
     private val user = app.currentUser
+    private lateinit var realm: Realm
 
     init {
         configureTheRealm()
@@ -38,14 +37,12 @@ object MongoDB : MongoRepository {
                         query = sub.query<Diary>(query = "ownerId == $0", user.id),
                         name = "User's Diaries"
                     )
-
                 }
                 .log(LogLevel.ALL)
                 .build()
             realm = Realm.open(config)
         }
     }
-
 
     override fun getAllDiaries(): Flow<Diaries> {
         return if (user != null) {
@@ -66,7 +63,7 @@ object MongoDB : MongoRepository {
                 flow { emit(RequestState.Error(e)) }
             }
         } else {
-            flow { emit(RequestState.Error(br.thiago.diaryapp.data.repository.UserNotAuthenticatedException())) }
+            flow { emit(RequestState.Error(UserNotAuthenticatedException())) }
         }
     }
 
@@ -101,7 +98,7 @@ object MongoDB : MongoRepository {
                 flow { emit(RequestState.Error(e)) }
             }
         } else {
-            flow { emit(RequestState.Error(br.thiago.diaryapp.data.repository.UserNotAuthenticatedException())) }
+            flow { emit(RequestState.Error(UserNotAuthenticatedException())) }
         }
     }
 
@@ -115,10 +112,9 @@ object MongoDB : MongoRepository {
                 flow { emit(RequestState.Error(e)) }
             }
         } else {
-            flow { emit(RequestState.Error(br.thiago.diaryapp.data.repository.UserNotAuthenticatedException())) }
+            flow { emit(RequestState.Error(UserNotAuthenticatedException())) }
         }
     }
-
 
     override suspend fun insertDiary(diary: Diary): RequestState<Diary> {
         return if (user != null) {
@@ -131,7 +127,7 @@ object MongoDB : MongoRepository {
                 }
             }
         } else {
-            RequestState.Error(br.thiago.diaryapp.data.repository.UserNotAuthenticatedException())
+            RequestState.Error(UserNotAuthenticatedException())
         }
     }
 
@@ -151,7 +147,7 @@ object MongoDB : MongoRepository {
                 }
             }
         } else {
-            RequestState.Error(br.thiago.diaryapp.data.repository.UserNotAuthenticatedException())
+            RequestState.Error(UserNotAuthenticatedException())
         }
     }
 
@@ -173,7 +169,7 @@ object MongoDB : MongoRepository {
                 }
             }
         } else {
-            RequestState.Error(br.thiago.diaryapp.data.repository.UserNotAuthenticatedException())
+            RequestState.Error(UserNotAuthenticatedException())
         }
     }
 
@@ -189,9 +185,10 @@ object MongoDB : MongoRepository {
                 }
             }
         } else {
-            RequestState.Error(br.thiago.diaryapp.data.repository.UserNotAuthenticatedException())
+            RequestState.Error(UserNotAuthenticatedException())
         }
     }
 }
+
 
 private class UserNotAuthenticatedException : Exception("User is not Logged in.")

@@ -3,8 +3,7 @@ package br.thiago.diaryapp.util
 import android.net.Uri
 import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
-import com.google.firebase.storage.FirebaseStorage
+
 import io.realm.kotlin.types.RealmInstant
 import java.time.Instant
 
@@ -21,29 +20,29 @@ import java.time.Instant
 // * Download images from Firebase asynchronously.
 // * This function returns imageUri after each successful download.
 // * */
-fun fetchImagesFromFirebase(
-    remoteImagePaths: List<String>,
-    onImageDownload: (Uri) -> Unit,
-    onImageDownloadFailed: (Exception) -> Unit = {},
-    onReadyToDisplay: () -> Unit = {}
-) {
-    if (remoteImagePaths.isNotEmpty()) {
-        remoteImagePaths.forEachIndexed { index, remoteImagePath ->
-            if (remoteImagePath.trim().isNotEmpty()) {
-                FirebaseStorage.getInstance().reference.child(remoteImagePath.trim()).downloadUrl
-                    .addOnSuccessListener {
-                        Log.d("DownloadURL", "$it")
-                        onImageDownload(it)
-                        if (remoteImagePaths.lastIndexOf(remoteImagePaths.last()) == index) {
-                            onReadyToDisplay()
-                        }
-                    }.addOnFailureListener {
-                        onImageDownloadFailed(it)
-                    }
-            }
-        }
-    }
-}
+//fun fetchImagesFromFirebase(
+//    remoteImagePaths: List<String>,
+//    onImageDownload: (Uri) -> Unit,
+//    onImageDownloadFailed: (Exception) -> Unit = {},
+//    onReadyToDisplay: () -> Unit = {}
+//) {
+//    if (remoteImagePaths.isNotEmpty()) {
+//        remoteImagePaths.forEachIndexed { index, remoteImagePath ->
+//            if (remoteImagePath.trim().isNotEmpty()) {
+//                FirebaseStorage.getInstance().reference.child(remoteImagePath.trim()).downloadUrl
+//                    .addOnSuccessListener {
+//                        Log.d("DownloadURL", "$it")
+//                        onImageDownload(it)
+//                        if (remoteImagePaths.lastIndexOf(remoteImagePaths.last()) == index) {
+//                            onReadyToDisplay()
+//                        }
+//                    }.addOnFailureListener {
+//                        onImageDownloadFailed(it)
+//                    }
+//            }
+//        }
+//    }
+//}
 //
 //fun retryUploadingImageToFirebase(
 //    imageToUpload: br.thiago.diaryapp.data.database.entity.ImageToUpload,

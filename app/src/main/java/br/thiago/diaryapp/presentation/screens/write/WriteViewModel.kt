@@ -20,7 +20,6 @@ import br.thiago.diaryapp.model.GalleryState
 import br.thiago.diaryapp.model.Mood
 import br.thiago.diaryapp.model.RequestState
 import br.thiago.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
-import br.thiago.diaryapp.util.fetchImagesFromFirebase
 import br.thiago.diaryapp.util.toRealmInstant
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -61,7 +60,7 @@ class WriteViewModel @Inject constructor(
 
     private fun fetchSelectedDiary() {
         if (uiState.selectedDiaryId != null) {
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.Main) {
                 MongoDB.getSelectedDiary(diaryId = ObjectId.invoke(uiState.selectedDiaryId!!))
                     .catch {
                         emit(RequestState.Error(Exception("Diary is already deleted.")))
@@ -72,25 +71,26 @@ class WriteViewModel @Inject constructor(
                             setSelectedDiary(diary = diary.data)
                             setTitle(title = diary.data.title)
                             setDescription(description = diary.data.description)
-
-                            fetchImagesFromFirebase(
-                                remoteImagePaths = diary.data.images,
-                                onImageDownload = { downloadedImage ->
-                                    galleryState.addImage(
-                                        GalleryImage(
-                                            image = downloadedImage,
-                                            remoteImagePath = extractImagePath(
-                                                fullImageUrl = downloadedImage.toString()
-                                            ),
-                                        )
-                                    )
-                                }
-                            )
+//
+//                            fetchImagesFromFirebase(
+//                                remoteImagePaths = diary.data.images,
+//                                onImageDownload = { downloadedImage ->
+//                                    galleryState.addImage(
+//                                        GalleryImage(
+//                                            image = downloadedImage,
+//                                            remoteImagePath = extractImagePath(
+//                                                fullImageUrl = downloadedImage.toString()
+//                                            ),
+//                                        )
+//                                    )
+//                                }
+//                            )
                         }
                     }
             }
         }
     }
+
 
     private fun setSelectedDiary(diary: Diary) {
         uiState = uiState.copy(selectedDiary = diary)
