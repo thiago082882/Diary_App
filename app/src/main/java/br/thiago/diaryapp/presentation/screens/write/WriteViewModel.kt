@@ -2,6 +2,7 @@ package br.thiago.diaryapp.presentation.screens.write
 
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +21,7 @@ import br.thiago.diaryapp.model.GalleryState
 import br.thiago.diaryapp.model.Mood
 import br.thiago.diaryapp.model.RequestState
 import br.thiago.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
+import br.thiago.diaryapp.util.fetchImagesFromFirebase
 import br.thiago.diaryapp.util.toRealmInstant
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -60,6 +62,7 @@ class WriteViewModel @Inject constructor(
 
     private fun fetchSelectedDiary() {
         if (uiState.selectedDiaryId != null) {
+            Log.d("writeViewModel", "${uiState.selectedDiaryId}")
             viewModelScope.launch(Dispatchers.Main) {
                 MongoDB.getSelectedDiary(diaryId = ObjectId.invoke(uiState.selectedDiaryId!!))
                     .catch {
@@ -71,20 +74,20 @@ class WriteViewModel @Inject constructor(
                             setSelectedDiary(diary = diary.data)
                             setTitle(title = diary.data.title)
                             setDescription(description = diary.data.description)
-//
-//                            fetchImagesFromFirebase(
-//                                remoteImagePaths = diary.data.images,
-//                                onImageDownload = { downloadedImage ->
-//                                    galleryState.addImage(
-//                                        GalleryImage(
-//                                            image = downloadedImage,
-//                                            remoteImagePath = extractImagePath(
-//                                                fullImageUrl = downloadedImage.toString()
-//                                            ),
-//                                        )
-//                                    )
-//                                }
-//                            )
+
+                            fetchImagesFromFirebase(
+                                remoteImagePaths = diary.data.images,
+                                onImageDownload = { downloadedImage ->
+                                    galleryState.addImage(
+                                        GalleryImage(
+                                            image = downloadedImage,
+                                            remoteImagePath = extractImagePath(
+                                                fullImageUrl = downloadedImage.toString()
+                                            ),
+                                        )
+                                    )
+                                }
+                            )
                         }
                     }
             }
@@ -140,7 +143,7 @@ class WriteViewModel @Inject constructor(
             }
         })
         if (result is RequestState.Success) {
-           // uploadImagesToFirebase()
+           uploadImagesToFirebase()
             withContext(Dispatchers.Main) {
                 onSuccess()
             }
@@ -167,7 +170,7 @@ class WriteViewModel @Inject constructor(
             }
         })
         if (result is RequestState.Success) {
-           // uploadImagesToFirebase()
+           uploadImagesToFirebase()
             deleteImagesFromFirebase()
             withContext(Dispatchers.Main) {
                 onSuccess()
@@ -213,27 +216,27 @@ class WriteViewModel @Inject constructor(
         )
     }
 
-//    private fun uploadImagesToFirebase() {
-//        val storage = FirebaseStorage.getInstance().reference
-//        galleryState.images.forEach { galleryImage ->
-//            val imagePath = storage.child(galleryImage.remoteImagePath)
-//            imagePath.putFile(galleryImage.image)
-//                .addOnProgressListener {
-//                    val sessionUri = it.uploadSessionUri
-//                    if (sessionUri != null) {
-//                        viewModelScope.launch(Dispatchers.IO) {
-//                            imageToUploadDao.addImageToUpload(
-//                                ImageToUpload(
-//                                    remoteImagePath = galleryImage.remoteImagePath,
-//                                    imageUri = galleryImage.image.toString(),
-//                                    sessionUri = sessionUri.toString()
-//                                )
-//                            )
-//                        }
-//                    }
-//                }
-//        }
-//    }
+    private fun uploadImagesToFirebase() {
+        val storage = FirebaseStorage.getInstance().reference
+        galleryState.images.forEach { galleryImage ->
+            val imagePath = storage.child(galleryImage.remoteImagePath)
+            imagePath.putFile(galleryImage.image)
+                .addOnProgressListener {
+                    val sessionUri = it.uploadSessionUri
+                    if (sessionUri != null) {
+                        viewModelScope.launch(Dispatchers.IO) {
+                            imageToUploadDao.addImageToUpload(
+                                ImageToUpload(
+                                    remoteImagePath = galleryImage.remoteImagePath,
+                                    imageUri = galleryImage.image.toString(),
+                                    sessionUri = sessionUri.toString()
+                                )
+                            )
+                        }
+                    }
+                }
+        }
+    }
 
     private fun deleteImagesFromFirebase(images: List<String>? = null) {
         val storage = FirebaseStorage.getInstance().reference

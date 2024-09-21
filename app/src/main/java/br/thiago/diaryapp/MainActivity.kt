@@ -7,29 +7,43 @@ import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
+import br.thiago.diaryapp.data.database.ImageToDeleteDao
+import br.thiago.diaryapp.data.database.ImageToUploadDao
 import br.thiago.diaryapp.data.repository.MongoDB
 import br.thiago.diaryapp.navigation.Screen
 import br.thiago.diaryapp.navigation.SetupNavGraph
 import br.thiago.diaryapp.ui.theme.DiaryAppTheme
 import br.thiago.diaryapp.util.Constants.APP_ID
+import br.thiago.diaryapp.util.retryDeletingImageFromFirebase
+import br.thiago.diaryapp.util.retryUploadingImageToFirebase
+import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
 import io.realm.kotlin.mongodb.App
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
+@RequiresApi(Build.VERSION_CODES.N)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    @Inject
+    lateinit var imageToUploadDao: ImageToUploadDao
+    @Inject
+    lateinit var imageToDeleteDao: ImageToDeleteDao
     private var keepSplashOpened = true
 
-    @RequiresApi(Build.VERSION_CODES.N)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen().setKeepOnScreenCondition {
             keepSplashOpened
         }
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        MongoDB.configureTheRealm()
+        FirebaseApp.initializeApp(this)
         setContent {
             DiaryAppTheme(dynamicColor = false) {
                 val navController = rememberNavController()
@@ -40,12 +54,46 @@ class MainActivity : ComponentActivity() {
                         keepSplashOpened = false
                     }
                 )
-
             }
+        }
+
+        cleanupCheck(
+            scope = lifecycleScope,
+            imageToUploadDao = imageToUploadDao,
+            imageToDeleteDao = imageToDeleteDao
+        )
+    }
+}
+private fun cleanupCheck(
+    scope: CoroutineScope,
+    imageToUploadDao: ImageToUploadDao,
+    imageToDeleteDao: ImageToDeleteDao
+) {
+    scope.launch(Dispatchers.IO) {
+        val result = imageToUploadDao.getAllImages()
+        result.forEach { imageToUpload ->
+            retryUploadingImageToFirebase(
+                imageToUpload = imageToUpload,
+                onSuccess = {
+                    scope.launch(Dispatchers.IO) {
+                        imageToUploadDao.cleanupImage(imageId = imageToUpload.id)
+                    }
+                }
+            )
+        }
+        val result2 = imageToDeleteDao.getAllImages()
+        result2.forEach { imageToDelete ->
+            retryDeletingImageFromFirebase(
+                imageToDelete = imageToDelete,
+                onSuccess = {
+                    scope.launch(Dispatchers.IO) {
+                        imageToDeleteDao.cleanupImage(imageId = imageToDelete.id)
+                    }
+                }
+            )
         }
     }
 }
-
 
 private fun getStartDestination(): String {
     val user = App.create(APP_ID).currentUser

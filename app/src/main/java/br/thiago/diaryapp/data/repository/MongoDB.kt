@@ -1,9 +1,10 @@
 package br.thiago.diaryapp.data.repository
 
 
+
+import br.thiago.diaryapp.util.Constants.APP_ID
 import br.thiago.diaryapp.model.Diary
 import br.thiago.diaryapp.model.RequestState
-import br.thiago.diaryapp.util.Constants.APP_ID
 import br.thiago.diaryapp.util.toInstant
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
@@ -20,6 +21,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+
 object MongoDB : MongoRepository {
     private val app = App.create(APP_ID)
     private val user = app.currentUser
@@ -189,6 +191,5 @@ object MongoDB : MongoRepository {
         }
     }
 }
-
 
 private class UserNotAuthenticatedException : Exception("User is not Logged in.")

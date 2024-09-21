@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import br.thiago.diaryapp.connectivity.ConnectivityObserver
 import br.thiago.diaryapp.connectivity.NetworkConnectivityObserver
 import br.thiago.diaryapp.data.database.ImageToDeleteDao
@@ -15,17 +17,13 @@ import br.thiago.diaryapp.data.database.entity.ImageToDelete
 import br.thiago.diaryapp.data.repository.Diaries
 import br.thiago.diaryapp.data.repository.MongoDB
 import br.thiago.diaryapp.model.RequestState
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
-
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.debounce
 import java.time.ZonedDateTime
 import javax.inject.Inject
 
-@RequiresApi(Build.VERSION_CODES.M)
-
+@RequiresApi(Build.VERSION_CODES.N)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val connectivity: NetworkConnectivityObserver,
@@ -40,14 +38,11 @@ class HomeViewModel @Inject constructor(
         private set
 
     init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            getDiaries()
-        }
+        getDiaries()
         viewModelScope.launch {
             connectivity.observe().collect { network = it }
         }
     }
-
 
     fun getDiaries(zonedDateTime: ZonedDateTime? = null) {
         dateIsSelected = zonedDateTime != null
@@ -58,9 +53,6 @@ class HomeViewModel @Inject constructor(
             observeAllDiaries()
         }
     }
-
-
-
 
     @OptIn(FlowPreview::class)
     private fun observeAllDiaries() {
