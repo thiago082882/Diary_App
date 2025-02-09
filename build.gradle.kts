@@ -1,10 +1,23 @@
-
+// We don't need this from Kotlin 2.0
+//buildscript {
+//    ext {
+//        compose_version = '1.4.6'
+//    }
+//}
+buildscript {
+    dependencies {
+        // Right now this classpath is needed for compatibility of the
+        // MongoDB Realm with Kotlin 2.0
+        classpath(libs.realm.kotlin.gradle.plugin)
+    }
+}
 plugins {
-    id("com.android.application") version "8.1.3" apply false
-    id("com.android.library") version "8.1.3" apply false
-    id("org.jetbrains.kotlin.android") version "1.8.20" apply false
-    id("io.realm.kotlin") version "1.11.0" apply false
-    id("com.google.dagger.hilt.android") version "2.48" apply false
-    id("com.google.gms.google-services") version "4.3.15" apply false
-    id("com.google.devtools.ksp") version "1.8.20-1.0.11" apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.jetbrains.kotlin) apply false
+    alias(libs.plugins.dagger.hilt) apply false
+    alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.google.ksp) apply false
+    alias(libs.plugins.jetbrains.kotlin.compose) apply false
+//    id 'io.realm.kotlin' version '1.11.0' apply false
 }

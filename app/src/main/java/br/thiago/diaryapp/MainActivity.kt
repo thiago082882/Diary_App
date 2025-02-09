@@ -1,32 +1,31 @@
 package br.thiago.diaryapp
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
+import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
-import br.thiago.diaryapp.data.database.ImageToDeleteDao
-import br.thiago.diaryapp.data.database.ImageToUploadDao
-import br.thiago.diaryapp.data.repository.MongoDB
-import br.thiago.diaryapp.navigation.Screen
 import br.thiago.diaryapp.navigation.SetupNavGraph
-import br.thiago.diaryapp.ui.theme.DiaryAppTheme
-import br.thiago.diaryapp.util.Constants.APP_ID
-import br.thiago.diaryapp.util.retryDeletingImageFromFirebase
-import br.thiago.diaryapp.util.retryUploadingImageToFirebase
+import br.thiago.mongo.database.ImageToDeleteDao
+import br.thiago.mongo.database.ImageToUploadDao
+import br.thiago.mongo.database.entity.ImageToDelete
+import br.thiago.mongo.database.entity.ImageToUpload
+import br.thiago.ui.theme.DiaryAppTheme
+import br.thiago.util.Constants.APP_ID
+import br.thiago.util.Screen
 import com.google.firebase.FirebaseApp
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storageMetadata
 import dagger.hilt.android.AndroidEntryPoint
-import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import io.realm.kotlin.mongodb.App
 import javax.inject.Inject
 
-@RequiresApi(Build.VERSION_CODES.N)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -35,7 +34,6 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var imageToDeleteDao: ImageToDeleteDao
     private var keepSplashOpened = true
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +62,13 @@ class MainActivity : ComponentActivity() {
         )
     }
 }
+
+private fun getStartDestination(): String {
+    val user = App.create(APP_ID).currentUser
+    return if (user != null && user.loggedIn) Screen.Home.route
+    else Screen.Authentication.route
+}
+
 private fun cleanupCheck(
     scope: CoroutineScope,
     imageToUploadDao: ImageToUploadDao,
@@ -95,8 +100,23 @@ private fun cleanupCheck(
     }
 }
 
-private fun getStartDestination(): String {
-    val user = App.create(APP_ID).currentUser
-    return if (user != null && user.loggedIn) Screen.Home.route
-    else Screen.Authentication.route
+fun retryUploadingImageToFirebase(
+    imageToUpload: ImageToUpload,
+    onSuccess: () -> Unit
+) {
+    val storage = FirebaseStorage.getInstance().reference
+    storage.child(imageToUpload.remoteImagePath).putFile(
+        imageToUpload.imageUri.toUri(),
+        storageMetadata { },
+        imageToUpload.sessionUri.toUri()
+    ).addOnSuccessListener { onSuccess() }
+}
+
+fun retryDeletingImageFromFirebase(
+    imageToDelete: ImageToDelete,
+    onSuccess: () -> Unit
+) {
+    val storage = FirebaseStorage.getInstance().reference
+    storage.child(imageToDelete.remoteImagePath).delete()
+        .addOnSuccessListener { onSuccess() }
 }

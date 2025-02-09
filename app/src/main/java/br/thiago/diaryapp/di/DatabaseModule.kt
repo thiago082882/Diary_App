@@ -1,10 +1,10 @@
 package br.thiago.diaryapp.di
+
 import android.content.Context
 import androidx.room.Room
-import br.thiago.diaryapp.connectivity.NetworkConnectivityObserver
-import br.thiago.diaryapp.data.database.ImagesDatabase
-import br.thiago.diaryapp.util.Constants.IMAGES_DATABASE
-
+import br.thiago.mongo.database.ImagesDatabase
+import br.thiago.util.Constants.IMAGES_DATABASE
+import br.thiago.util.connectivity.NetworkConnectivityObserver
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
