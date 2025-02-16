@@ -3,7 +3,7 @@ package br.thiago.util
 object Constants {
 
     const val APP_ID = "application-0-njdjp"
-    const val CLIENT_ID = "1033315763797-iquhhnameldccvca98o901k7uv7jtcjp.apps.googleusercontent.com"
+    const val CLIENT_ID = "1033315763797-i13u79kp1cvpcqq36ih3s1v53nliegak.apps.googleusercontent.com"
 
     const val WRITE_SCREEN_ARGUMENT_KEY = "diaryId"
 
